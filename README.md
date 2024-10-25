@@ -13,3 +13,6 @@
 <div align="center">
   <img height="550"  src="https://github.com/user-attachments/assets/8b18ea0d-a952-4f1d-9c49-a5a0e48d8fc9" />
 </div>
+
+# Description : 
+```The Contact Management App is a Flutter-based application designed to store and manage contacts locally using SQLite while also providing a backup to Firebase Firestore. It allows users to add, update, and delete contacts with fields such as name, phone number, and email, and includes a Firebase Authentication feature for secure login. The app supports offline access, syncing data with Firestore when back online, and enables contact search by name. The UI is simple, using a ListView to display contacts and a Floating Action Button (FAB) for adding new entries. Submission includes code and a demo video showing app functionality.```
