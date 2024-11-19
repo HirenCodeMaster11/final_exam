@@ -1,3 +1,6 @@
+import 'package:final_exam/Provider/bookProvider.dart';
+import 'package:final_exam/View/Home%20page/home.dart';
+import 'package:final_exam/View/signIn.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,11 +21,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      routes: {
-
-      },
+    return ChangeNotifierProvider(
+      create: (context) => BookProvider(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        routes: {
+          '/' : (context) => SignIn(),
+          '/home' : (context) => HomePage(),
+        },
+      ),
     );
   }
 }
