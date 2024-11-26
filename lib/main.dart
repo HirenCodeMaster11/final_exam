@@ -1,10 +1,10 @@
-import 'package:final_exam/Provider/bookProvider.dart';
-import 'package:final_exam/View/Home%20page/home.dart';
-import 'package:final_exam/View/signIn.dart';
+import 'package:final_exam/View/Home/home.dart';
+import 'package:final_exam/View/sign+in.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'Provider/provider.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => BookProvider(),
+      create: (context) => AttendanceProvider(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         routes: {

@@ -3,16 +3,19 @@ import 'package:flutter/material.dart';
 class MyTextField extends StatelessWidget {
   final String name;
   final TextEditingController controller;
+  final ValueChanged<String>? onChanged;
 
   const MyTextField({
     super.key,
     required this.name,
     required this.controller,
+    this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      onChanged: onChanged, // Use the field
       controller: controller,
       cursorColor: Colors.black,
       decoration: InputDecoration(

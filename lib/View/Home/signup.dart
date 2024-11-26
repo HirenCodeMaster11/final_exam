@@ -1,24 +1,25 @@
-import 'package:final_exam/Provider/bookProvider.dart';
-import 'package:final_exam/Service/auth.dart';
-import 'package:final_exam/View/Home%20page/Component/textField.dart';
+import 'package:final_exam/Provider/provider.dart';
+import 'package:final_exam/View/MyTextField.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class SignIn extends StatefulWidget {
-  const SignIn({super.key});
+import '../../Services/auth.dart';
+
+class SignUp extends StatefulWidget {
+  const SignUp({super.key});
 
   @override
-  State<SignIn> createState() => _SignInState();
+  State<SignUp> createState() => _SignUpState();
 }
 
-class _SignInState extends State<SignIn> {
+class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
-    var providerTrue = Provider.of<BookProvider>(context);
-    var providerFalse = Provider.of<BookProvider>(context, listen: false);
+    var providerTrue = Provider.of<AttendanceProvider>(context);
+    var providerFalse = Provider.of<AttendanceProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
-        title: Text('SignIn',style: TextStyle(fontWeight: FontWeight.w500,fontSize: 26),),
+        title: Text('SignUp',style: TextStyle(fontWeight: FontWeight.w500,fontSize: 26),),
       ),
       body: Center(
         child: Padding(
@@ -32,12 +33,10 @@ class _SignInState extends State<SignIn> {
               SizedBox(height: 20,),
               TextButton(onPressed: () {
 
-              }, child: Text("you don't have account ? SignUp"),),
+              }, child: Text("you have account ? SignIn"),),
               SizedBox(height: 20,),
               GestureDetector(
-                onTap: () {
-                  AuthService.authService.signInWithGoogle();
-                  Navigator.of(context).pushNamed('/home');
+                onTap: ()  {
                 },
                 child: Container(
                   height: 50,
@@ -51,6 +50,10 @@ class _SignInState extends State<SignIn> {
               ),
               SizedBox(height: 20,),
               GestureDetector(
+                onTap: () async {
+                  await AuthService.authService.createAccountWithEmailAndPassword(providerTrue.txtEmail.text, providerTrue.txtPass.text);
+                  Navigator.of(context).pushNamed('/home');
+                },
                 child: Container(
                   height: 50,
                   width: 100,
@@ -59,7 +62,7 @@ class _SignInState extends State<SignIn> {
                     color: Colors.black,
                   ),
                   alignment: Alignment.center,
-                  child: Text('SignIn'),
+                  child: Text('SignUp',style: TextStyle(color: Colors.white),),
                 ),
               )
             ],
@@ -69,3 +72,4 @@ class _SignInState extends State<SignIn> {
     );
   }
 }
+

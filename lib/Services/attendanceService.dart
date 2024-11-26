@@ -2,36 +2,34 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'auth.dart';
 
-class BookServices {
-  BookServices._();
+class Attendanceservice {
+  Attendanceservice._();
 
-  static BookServices services = BookServices._();
+  static Attendanceservice services = Attendanceservice._();
   final _firestore = FirebaseFirestore.instance;
 
   Future<void> addDataInStore({
     required int id,
-    required String title,
-    required String author,
+    required String name,
+    required String room,
+    required String date,
     required String status,
   }) async {
     await _firestore
-        .collection("users")
-        .doc(AuthService.authService.getCurrentUser()!.email)
-        .collection("books")
+        .collection("attendance")
         .doc(id.toString())
         .set({
       'id': id,
-      'title': title,
-      'author': author,
+      'name' : name,
+      'room' : room,
+      'date' : date,
       'status': status,
     });
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> readDataFromStore() {
     return _firestore
-        .collection("users")
-        .doc(AuthService.authService.getCurrentUser()!.email)
-        .collection("books")
+        .collection("attendance")
         .snapshots();
   }
 }
