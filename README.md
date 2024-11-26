@@ -1,3 +1,7 @@
+## Description :
+```The Attendance Tracker App helps teachers efficiently manage student attendance with offline and online support. It uses SQLite for local storage, enabling CRUD operations (Create, Read, Update, Delete) on records with fields like Student Name, Class, Date, and Attendance Status (Present/Absent).The app supports Firebase Firestore for cloud backup, syncing data when online. Users can filter records by name, class, and date for better tracking. A clean UI with color-coded attendance statuses (e.g., green for Present, red for Absent) ensures ease of use. Offline functionality ensures data accessibility, syncing with Firebase once connected.```
+
+
 <div align="center">
  <video src="https://github.com/user-attachments/assets/48d12d90-a9ff-4c42-a35f-e909fa05a226" type="video/mp4"> 
 </video>
@@ -14,7 +18,3 @@
 
 <img width="680" alt="Screenshot 2024-11-26 120418" src="https://github.com/user-attachments/assets/7d5296e8-d7c0-4b02-b0be-eff724cb513d">
 <img width="708" alt="Screenshot 2024-11-26 120446" src="https://github.com/user-attachments/assets/beffd6ad-717b-4ea7-ac6f-f0aaff746a6e">
-
-
-## Description :
-```The Attendance Tracker App helps teachers efficiently manage student attendance with offline and online support. It uses SQLite for local storage, enabling CRUD operations (Create, Read, Update, Delete) on records with fields like Student Name, Class, Date, and Attendance Status (Present/Absent).The app supports Firebase Firestore for cloud backup, syncing data when online. Users can filter records by name, class, and date for better tracking. A clean UI with color-coded attendance statuses (e.g., green for Present, red for Absent) ensures ease of use. Offline functionality ensures data accessibility, syncing with Firebase once connected.```
