@@ -1,17 +1,19 @@
 import 'package:final_exam/Provider/provider.dart';
-import 'package:final_exam/modal/modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../MyTextField.dart';
+import '../modal/modal.dart';
+import 'my text field.dart';
+
+
 
 class SearchPage extends StatelessWidget {
   const SearchPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    var providerTrue = Provider.of<AttendanceProvider>(context);
-    var providerFalse = Provider.of<AttendanceProvider>(context, listen: false);
+    var providerTrue = Provider.of<TodoProvider>(context);
+    var providerFalse = Provider.of<TodoProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: Text("Search Page"),
@@ -23,8 +25,8 @@ class SearchPage extends StatelessWidget {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: MyTextField(name: 'Search Name', controller: providerTrue.txtSearch,onChanged: (value) {
-                    providerFalse.searchByName(value);
+                  child: MyTextField(name: 'Search Title', controller: providerTrue.txtSearch,onChanged: (value) {
+                    providerFalse.searchByTitle(value);
                   },
                   ),
                 ),
@@ -32,12 +34,12 @@ class SearchPage extends StatelessWidget {
             ],
           ),
           FutureBuilder(
-            future: providerFalse.getName(),
+            future: providerFalse.getTitle(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 providerTrue.searchName = providerTrue.searchList
                     .map(
-                      (e) => AttendanceModal.fromMap(e),
+                      (e) => TodoModal.fromMap(e),
                 )
                     .toList();
                 return Expanded(
@@ -48,7 +50,7 @@ class SearchPage extends StatelessWidget {
                         child: ListTile(
                           leading: Text(providerTrue.searchName[index].id.toString()),
                           title: Text(providerTrue.searchName[index].name.toString()),
-                          tileColor: ("present" == providerTrue.searchName[index].status)?Colors.green : Colors.red,
+                          // tileColor: ("present" == providerTrue.searchName[index].status)?Colors.green : Colors.red,
                           subtitle: Column(
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,

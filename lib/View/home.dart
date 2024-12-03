@@ -1,19 +1,33 @@
 import 'package:final_exam/Provider/provider.dart';
-import 'package:final_exam/View/Home/search%20screen.dart';
 import 'package:final_exam/modal/modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../Services/auth.dart';
-import '../MyTextField.dart';
+import 'SearchPage.dart';
+import 'my text field.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    var providerTrue = Provider.of<AttendanceProvider>(context);
-    var providerFalse = Provider.of<AttendanceProvider>(context, listen: false);
+    var providerTrue = Provider.of<TodoProvider>(context);
+    var providerFalse = Provider.of<TodoProvider>(context, listen: false);
+
+    Future<void> _selectDate(BuildContext context) async {
+      final DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2100),
+      );
+      if (pickedDate != null) {
+        providerTrue.selectedDate = pickedDate;
+        providerTrue.txtDate.text =
+            "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Home Page'),
@@ -25,35 +39,41 @@ class HomePage extends StatelessWidget {
               child: Text('Save Local')),
           TextButton(
             onPressed: () {
-              List<AttendanceModal> attendance = [];
-              attendance = providerTrue.attendanceList
+              List<TodoModal> todo = [];
+              todo = providerTrue.todoList
                   .map(
-                    (e) => AttendanceModal.fromMap(e),
+                    (e) => TodoModal.fromMap(e),
                   )
                   .toList();
 
-              for (int i = 0; i < providerTrue.attendanceList.length; i++) {
-                providerFalse.attendanceAddInStore(
-                    id: attendance[i].id,
-                    name: attendance[i].name,
-                    room: attendance[i].room,
-                    date: attendance[i].date,
-                    status: attendance[i].status);
+              for (int i = 0; i < providerTrue.todoList.length; i++) {
+                providerFalse.todoAddInStore(
+                  id: todo[i].id,
+                  title: todo[i].title,
+                  date: todo[i].date,
+                  status: todo[i].status,
+                  description: todo[i].description,
+                );
               }
             },
             child: Text('BackUp'),
           ),
-          TextButton(onPressed: () async {
-            await AuthService.authService.signOut();
-            Navigator.of(context).pushNamed('/');
-          }, child: Icon(Icons.logout))
+          TextButton(
+              onPressed: () async {
+                Navigator.of(context).pushNamed('/');
+              },
+              child: Icon(Icons.logout))
         ],
       ),
       body: Column(
         children: [
           GestureDetector(
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => SearchPage(),));
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => SearchPage(),
+                ),
+              );
             },
             child: Container(
               alignment: Alignment.centerLeft,
@@ -73,47 +93,55 @@ class HomePage extends StatelessWidget {
               future: providerFalse.readData(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  List<AttendanceModal> attendance = [];
-                  attendance = providerTrue.attendanceList
+                  List<TodoModal> todo = [];
+                  todo = providerTrue.todoList
                       .map(
-                        (e) => AttendanceModal.fromMap(e),
+                        (e) => TodoModal.fromMap(e),
                       )
                       .toList();
                   return ListView.builder(
-                    itemCount: attendance.length,
+                    itemCount: todo.length,
                     itemBuilder: (context, index) => Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: ListTile(
                         onTap: () {
-                          providerTrue.id = attendance[index].id;
-                          providerTrue.txtName.text = attendance[index].name;
-                          providerTrue.txtRoom.text = attendance[index].room;
-                          providerTrue.txtDate.text = attendance[index].date;
-                          providerTrue.txtStatus.text = attendance[index].status;
+                          providerTrue.id = todo[index].id;
+                          providerTrue.txtTitle.text = todo[index].title;
+                          providerTrue.txtDate.text =
+                              todo[index].date.toString();
+                          providerTrue.txtStatus.text = todo[index].status;
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
-                              title: const Text('Update Attendance'),
+                              title: const Text('Update Todo'),
                               content: SingleChildScrollView(
                                 child: Column(
                                   children: [
                                     MyTextField(
-                                      controller: providerTrue.txtName,
-                                      name: 'Name',
+                                      controller: providerTrue.txtTitle,
+                                      name: 'Title',
                                     ),
                                     SizedBox(
                                       height: 10,
                                     ),
                                     MyTextField(
-                                      controller: providerTrue.txtRoom,
-                                      name: 'Class Room',
+                                      controller: providerTrue.txtDes,
+                                      name: 'Description',
                                     ),
                                     SizedBox(
                                       height: 10,
                                     ),
-                                    MyTextField(
+                                    TextField(
                                       controller: providerTrue.txtDate,
-                                      name: 'Date',
+                                      decoration: InputDecoration(
+                                        suffixIcon: GestureDetector(
+                                            onTap: () {
+                                              _selectDate(context);
+                                            },
+                                            child: Icon(Icons.calendar_month)),
+                                        labelText: 'Select Date',
+                                        border: OutlineInputBorder(),
+                                      ),
                                     ),
                                     SizedBox(
                                       height: 10,
@@ -134,6 +162,7 @@ class HomePage extends StatelessWidget {
                                   children: [
                                     TextButton(
                                       onPressed: () {
+                                        providerFalse.clearAll();
                                         Navigator.pop(context);
                                       },
                                       child: const Text('Cancel'),
@@ -141,11 +170,13 @@ class HomePage extends StatelessWidget {
                                     TextButton(
                                       onPressed: () {
                                         providerFalse.updateData(
-                                            id: providerTrue.id,
-                                            name: providerTrue.txtName.text,
-                                            room: providerTrue.txtRoom.text,
-                                            date: providerTrue.txtDate.text,
-                                            status: providerTrue.txtStatus.text);
+                                          id: providerTrue.id,
+                                          title: providerTrue.txtTitle.text,
+                                          description: providerTrue.txtDes.text,
+                                          date: providerTrue.selectedDate,
+                                          status: providerTrue.txtStatus.text,
+                                        );
+                                        providerFalse.clearAll();
                                         Navigator.pop(context);
                                       },
                                       child: const Text('OK'),
@@ -156,25 +187,24 @@ class HomePage extends StatelessWidget {
                             ),
                           );
                         },
-                        tileColor: ("present" == attendance[index].status)?Colors.green : Colors.red,
-                        leading: Text(attendance[index].id.toString(),style: TextStyle(color: Colors.white)),
-                        title: Text(
-                          attendance[index].name,
-                          style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),
+                        leading: Text(
+                          todo[index].id.toString(),
+                          style: TextStyle(color: Colors.black),
                         ),
-                        subtitle: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(attendance[index].room,style: TextStyle(color: Colors.white),),
-                            Text(attendance[index].status,style: TextStyle(color: Colors.white)),
-                          ],
+                        title: Text(
+                          todo[index].title,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.black),
                         ),
                         trailing: GestureDetector(
-                            onTap: () {
-                              providerFalse.deleteData(id: attendance[index].id);
-                            },
-                            child: Icon(Icons.delete,color: Colors.white,)),
+                          onTap: () {
+                            providerFalse.deleteData(id: todo[index].id);
+                          },
+                          child: Icon(
+                            Icons.delete,
+                            color: Colors.black,
+                          ),
+                        ),
                       ),
                     ),
                   );
@@ -198,39 +228,39 @@ class HomePage extends StatelessWidget {
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: const Text('Add Attendances'),
+              title: const Text('Add Todo'),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     MyTextField(
-                      controller: providerTrue.txtName,
-                      name: 'Name',
+                      controller: providerTrue.txtTitle,
+                      name: 'Title',
                     ),
-                    SizedBox(
-                      height: 5,
-                    ),
+                    SizedBox(height: 5),
                     MyTextField(
-                      controller: providerTrue.txtRoom,
-                      name: 'Class Room',
+                      controller: providerTrue.txtDes,
+                      name: 'Description',
                     ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    MyTextField(
+                    SizedBox(height: 5),
+                    TextField(
                       controller: providerTrue.txtDate,
-                      name: 'Date',
+                      decoration: InputDecoration(
+                        suffixIcon: GestureDetector(
+                            onTap: () {
+                              _selectDate(context);
+                            },
+                            child: Icon(Icons.calendar_month)),
+                        labelText: 'Select Date',
+                        border: OutlineInputBorder(),
+                      ),
                     ),
-                    SizedBox(
-                      height: 5,
-                    ),
+                    SizedBox(height: 5),
                     MyTextField(
                       controller: providerTrue.txtStatus,
                       name: 'Status',
                     ),
-                    SizedBox(
-                      height: 5,
-                    ),
+                    SizedBox(height: 5),
                   ],
                 ),
               ),
@@ -240,20 +270,21 @@ class HomePage extends StatelessWidget {
                   children: [
                     TextButton(
                       onPressed: () {
+                        providerFalse.clearAll();
                         Navigator.pop(context);
                       },
                       child: const Text('Cancel'),
                     ),
                     TextButton(
                       onPressed: () {
-                        providerTrue.id =
-                            providerTrue.attendanceList.length + 1;
+                        providerTrue.id = providerTrue.todoList.length + 1;
                         providerFalse.insertDatabase(
-                            id: providerTrue.id,
-                            name: providerTrue.txtName.text,
-                            room: providerTrue.txtRoom.text,
-                            date: providerTrue.txtDate.text,
-                            status: providerTrue.txtStatus.text);
+                          id: providerTrue.id,
+                          title: providerTrue.txtTitle.text,
+                          date: providerTrue.selectedDate,
+                          status: providerTrue.txtStatus.text,
+                          description: providerTrue.txtDes.text,
+                        );
                         Navigator.pop(context);
                         providerFalse.clearAll();
                       },
@@ -266,6 +297,15 @@ class HomePage extends StatelessWidget {
           );
         },
         child: Icon(Icons.add),
+      ),
+      bottomNavigationBar: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Icon(Icons.add,size: 38,),
+          Icon(Icons.edit,size: 28),
+          Icon(Icons.person,size: 28,),
+          Icon(Icons.settings,size: 28,),
+        ],
       ),
     );
   }

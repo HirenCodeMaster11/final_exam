@@ -15,7 +15,7 @@ class MyTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
-      onChanged: onChanged, // Use the field
+      onChanged: onChanged,
       controller: controller,
       cursorColor: Colors.black,
       decoration: InputDecoration(

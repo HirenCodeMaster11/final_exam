@@ -1,35 +1,33 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'auth.dart';
+class TodoService {
+  TodoService._();
 
-class Attendanceservice {
-  Attendanceservice._();
-
-  static Attendanceservice services = Attendanceservice._();
+  static TodoService services = TodoService._();
   final _firestore = FirebaseFirestore.instance;
 
   Future<void> addDataInStore({
     required int id,
-    required String name,
-    required String room,
-    required String date,
+    required String title,
+    required String description,
+    required DateTime date,
     required String status,
   }) async {
     await _firestore
-        .collection("attendance")
+        .collection("todo")
         .doc(id.toString())
         .set({
       'id': id,
-      'name' : name,
-      'room' : room,
+      'title' : title,
+      'description' : description,
       'date' : date,
-      'status': status,
+      'status' : status,
     });
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> readDataFromStore() {
     return _firestore
-        .collection("attendance")
+        .collection("todo")
         .snapshots();
   }
 }

@@ -1,25 +1,28 @@
+
 import 'package:final_exam/Provider/provider.dart';
-import 'package:final_exam/View/MyTextField.dart';
+import 'package:final_exam/View/sign%20up.dart';
 import 'package:flutter/material.dart';
+
 import 'package:provider/provider.dart';
 
-import '../../Services/auth.dart';
+import '../services/authServices.dart';
+import 'my text field.dart';
 
-class SignUp extends StatefulWidget {
-  const SignUp({super.key});
+class SignIn extends StatefulWidget {
+  const SignIn({super.key});
 
   @override
-  State<SignUp> createState() => _SignUpState();
+  State<SignIn> createState() => _SignInState();
 }
 
-class _SignUpState extends State<SignUp> {
+class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
-    var providerTrue = Provider.of<AttendanceProvider>(context);
-    var providerFalse = Provider.of<AttendanceProvider>(context, listen: false);
+    var providerTrue = Provider.of<TodoProvider>(context);
+    var providerFalse = Provider.of<TodoProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
-        title: Text('SignUp',style: TextStyle(fontWeight: FontWeight.w500,fontSize: 26),),
+        title: Text('SignIn',style: TextStyle(fontWeight: FontWeight.w500,fontSize: 26),),
       ),
       body: Center(
         child: Padding(
@@ -32,8 +35,8 @@ class _SignUpState extends State<SignUp> {
               MyTextField(name: 'Password', controller: providerTrue.txtPass),
               SizedBox(height: 20,),
               TextButton(onPressed: () {
-
-              }, child: Text("you have account ? SignIn"),),
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => SignUp(),));
+              }, child: Text("you don't have account ? SignUp"),),
               SizedBox(height: 20,),
               GestureDetector(
                 onTap: ()  {
@@ -51,7 +54,8 @@ class _SignUpState extends State<SignUp> {
               SizedBox(height: 20,),
               GestureDetector(
                 onTap: () async {
-                  await AuthService.authService.createAccountWithEmailAndPassword(providerTrue.txtEmail.text, providerTrue.txtPass.text);
+                  await AuthService.authService.signInAccountWithEmailAndPassword(providerTrue.txtEmail.text, providerTrue.txtPass.text);
+                  providerFalse.clearAll();
                   Navigator.of(context).pushNamed('/home');
                 },
                 child: Container(
@@ -62,7 +66,7 @@ class _SignUpState extends State<SignUp> {
                     color: Colors.black,
                   ),
                   alignment: Alignment.center,
-                  child: Text('SignUp',style: TextStyle(color: Colors.white),),
+                  child: Text('SignIn',style: TextStyle(color: Colors.white),),
                 ),
               )
             ],
@@ -72,4 +76,3 @@ class _SignUpState extends State<SignUp> {
     );
   }
 }
-

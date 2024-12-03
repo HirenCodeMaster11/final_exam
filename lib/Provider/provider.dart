@@ -1,23 +1,26 @@
-import 'package:final_exam/DatabaseHelper/dbHelper.dart';
-import 'package:final_exam/modal/modal.dart';
 import 'package:flutter/material.dart';
 
-import '../Services/attendanceService.dart';
+import '../DbHelper/helper.dart';
+import '../modal/modal.dart';
+import '../services/todoServices.dart';
 
-class AttendanceProvider extends ChangeNotifier {
-  var txtName = TextEditingController();
-  var txtRoom = TextEditingController();
+class TodoProvider extends ChangeNotifier {
+  var txtTitle = TextEditingController();
   var txtDate = TextEditingController();
   var txtStatus = TextEditingController();
+  var txtDes = TextEditingController();
   var txtEmail = TextEditingController();
   var txtPass = TextEditingController();
+
   var txtSearch = TextEditingController();
-  List attendanceList = [];
+  List todoList = []; //add data
   int id = 0;
 
   List searchList = [];
   String search = '';
   List searchName = [];
+
+  DateTime selectedDate = DateTime.now();
 
   void initDatabase() {
     DbHelper.helper.initDatabase();
@@ -25,65 +28,74 @@ class AttendanceProvider extends ChangeNotifier {
 
   Future<void> insertDatabase(
       {required int id,
-      required String name,
-      required String room,
-      required String date,
-      required String status}) async {
-    await DbHelper.helper
-        .insertData(id: id, name: name, room: room, date: date, status: status);
+        required String title,
+        required DateTime date,
+        required String status,
+        required String description})   async {
+    await DbHelper.helper.insertData(id: id, title: title, description: description,date: date, status: status);
   }
 
   Future<void> cloudToLocally() async {
-    final details = await Attendanceservice.services.readDataFromStore().first;
-    final attendanceDetails = details.docs.map(
-      (e) {
+    final details = await TodoService.services.readDataFromStore().first;
+
+    final myDetails = details.docs.map(
+          (e) {
         final data = e.data();
-        return AttendanceModal(
-          id: id,
-          name: data['name'],
-          room: data['room'],
+        return TodoModal(
+          id: data['id'],
+          title: data['title'],
           date: data['date'],
           status: data['status'],
+          description: data['description'],
         );
       },
     ).toList();
 
-    for (var attendance in attendanceDetails) {
-      final sync = await DbHelper.helper.DataExist(id);
-      if (sync) {
-        await updateData(
-            id: attendance.id,
-            name: attendance.name,
-            room: attendance.room,
-            date: attendance.date,
-            status: attendance.status);
-      } else {
-        await insertDatabase(
-            id: attendance.id,
-            name: attendance.name,
-            room: attendance.room,
-            date: attendance.date,
-            status: attendance.status);
+    for (var todo in myDetails) {
+      try {
+        final sync = await DbHelper.helper.DataExist(todo.id);
+        if (sync) {
+          await DbHelper.helper.updateData(
+            todo.id,
+            todo.title,
+            todo.description,
+            todo.date,
+            todo.status,
+          );
+        } else {
+          await DbHelper.helper.insertData(
+            id: todo.id,
+            title: todo.title,
+            description: todo.description,
+            date: todo.date,
+            status: todo.status,
+          );
+        }
+      } catch (e) {
+        print('Error processing ID: ${todo.id}, Error: $e');
       }
     }
   }
 
+
+
   Future<void> updateData(
       {required int id,
-      required String name,
-      required String room,
-      required String date,
-      required String status}) async {
-    await DbHelper.helper.updateData(id, name, room, date, status);
+        required String title,
+        required String description,
+        required DateTime date,
+        required String status,
+      }) async {
+    await DbHelper.helper.updateData(id, title,description,date,status);
   }
 
-  Future<List<Map<String, Object?>>> getName() async {
-    return searchList = await DbHelper.helper.getSearchByName(search);
+  Future<List<Map<String, Object?>>> getTitle() async {
+    return searchList = await DbHelper.helper.getSearchByTitle(search);
   }
 
-  void searchByName(String value) {
+  void searchByTitle(String value) {
     search = value;
-    getName();
+    getTitle();
     notifyListeners();
   }
 
@@ -92,30 +104,32 @@ class AttendanceProvider extends ChangeNotifier {
   }
 
   Future<List> readData() async {
-    attendanceList = await DbHelper.helper.readAllData();
+    todoList = await DbHelper.helper.readAllData();
     notifyListeners();
-    return attendanceList;
+    return todoList;
   }
 
-  Future<void> attendanceAddInStore(
+  Future<void> todoAddInStore(
       {required int id,
-      required String name,
-      required String room,
-      required String date,
-      required String status}) async {
-    await Attendanceservice.services.addDataInStore(
-        id: id, name: name, room: room, date: date, status: status);
+        required String title,
+        required String description,
+        required DateTime date,
+        required String status,
+        }) async {
+    await TodoService.services.addDataInStore(
+        id: id, title: title,date: date,status: status,description: description);
   }
 
   void clearAll() {
-    txtName.clear();
-    txtRoom.clear();
+    txtTitle.clear();
     txtDate.clear();
     txtStatus.clear();
+    txtPass.clear();
+    txtEmail.clear();
     notifyListeners();
   }
 
-  AttendanceProvider() {
+  MyProvider() {
     initDatabase();
   }
 }

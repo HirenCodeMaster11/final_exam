@@ -1,25 +1,24 @@
-class AttendanceModal
+class TodoModal
 {
   late int id;
-  late String name,room,date,status;
+  late String title,status,description;
+  DateTime date;
 
-  AttendanceModal({required this.id,required this.name,required this.room,required this.date,required this.status});
+  TodoModal({required this.id,required this.title,required this.date,required this.status,required this.description,});
 
-  factory AttendanceModal.fromMap(Map m1)
+  factory TodoModal.fromMap(Map m1)
   {
-    return AttendanceModal(id: m1['id'], name: m1['name'], room: m1['room'], date: m1['date'], status: m1['status']);
+    return TodoModal(id: m1['id'], title: m1['title'],date: m1['date'],status: m1['status'],description: m1['description']);
   }
 }
 
-Map toMap(AttendanceModal attendance)
+Map toMap(TodoModal todo)
 {
   return {
-    'id' : attendance.id,
-    'name' : attendance.name,
-    'room' : attendance.room,
-    'date' : attendance.date,
-    'status' : attendance.status,
+    'id' : todo.id,
+    'title' : todo.title,
+    'date' : todo.date,
+    'status' : todo.status,
+    'description' : todo.description,
   };
 }
-
-

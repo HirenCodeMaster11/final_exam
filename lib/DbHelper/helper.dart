@@ -7,8 +7,8 @@ class DbHelper {
   static DbHelper helper = DbHelper._();
 
   Database? _database;
-  String databaseName = 'attendance.db';
-  String tableName = 'attendance';
+  String databaseName = 'todo.db';
+  String tableName = 'todo';
 
   Future<Database> get database async => _database ?? await initDatabase();
 
@@ -23,8 +23,8 @@ class DbHelper {
           String sql = '''
         CREATE TABLE $tableName (
           id INTEGER NOT NULL,
-          name TEXT NOT NULL,
-          room TEXT NOT NULL,
+          title TEXT NOT NULL,
+          description TEXT NOT NULL,
           date TEXT NOT NULL,
           status TEXT NOT NULL
         )
@@ -44,19 +44,20 @@ class DbHelper {
     return result.isNotEmpty;
   }
 
-  Future<int> insertData(
-      {required int id,
-      required String name,
-      required String room,
-      required String date,
-      required String status}) async {
+  Future<int> insertData({
+    required int id,
+    required String title,
+    required String description,
+    required DateTime date,
+    required String status,
+  }) async {
     final db = await database;
     String sql = '''
      INSERT INTO $tableName(
-    id, name, room, date, status
+    id, title, description, date, status
     ) VALUES (?, ?, ?, ?, ?)
     ''';
-    List args = [id, name, room, date, status];
+    List args = [id, title, description, date, status];
     return await db.rawInsert(sql, args);
   }
 
@@ -68,21 +69,20 @@ class DbHelper {
     return await db.rawQuery(sql);
   }
 
-  Future<List<Map<String, Object?>>> getSearchByName(String name) async {
+  Future<List<Map<String, Object?>>> getSearchByTitle(String title) async {
     final db = await database;
     String sql = '''
-    SELECT * FROM $tableName WHERE name LIKE '%$name%'
+    SELECT * FROM $tableName WHERE title LIKE '%$title%'
     ''';
     return await db.rawQuery(sql);
   }
 
-  Future<int> updateData(
-      int id, String name, String room, String date, String status) async {
+  Future<int> updateData(int id, String title,String description,DateTime date,String status) async {
     final db = await database;
     String sql = '''
-    UPDATE $tableName SET name = ?, room = ?,date = ? , status = ? WHERE id = ?
+    UPDATE $tableName SET title = ?, description = ?, date = ?, status = ? WHERE id = ?
     ''';
-    List args = [name, room, date, status, id];
+    List args = [title, description, date, status, id];
     return await db.rawUpdate(sql, args);
   }
 
